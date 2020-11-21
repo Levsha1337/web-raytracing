@@ -113,6 +113,13 @@ function render(pov, dir, fov, elements, lights) {
             console.log(`drawing...`);
 
             drawScreen();
+            
+            endTime = performance.now() - startTime;
+            endTime = (endTime/1000).toFixed(2);
+            console.log(`Render time: ${endTime}s`);
+
+            lastRender.size = WIDTH;
+            lastRender.time = endTime;
         }
     }
     
@@ -156,6 +163,8 @@ let lastRender = {
     time: undefined,
     size: undefined
 };
+let startTime;
+let endTime;
 
 const settings = {
     fov: document.getElementById('fovInput'),
@@ -198,14 +207,8 @@ function onRenderButtonClick() {
         console.log(`Estimated time of render: ${current}s`);
     }
 
-    const startTime = performance.now();
+    startTime = performance.now();
     render(pov, dir, fov, elements, lights);
-    let endTime = performance.now() - startTime;
-    endTime = (endTime/1000).toFixed(2);
-    console.log(`Render time: ${endTime}s`);
-
-    lastRender.size = WIDTH;
-    lastRender.time = endTime;
 }
 
 document.getElementById('button-render-start').addEventListener('click', onRenderButtonClick);
