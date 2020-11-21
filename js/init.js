@@ -1,14 +1,14 @@
 const display = document.getElementById('display');
 const ctx = display.getContext('2d');
-const WIDTH = display.width = 1024;
-const HEIGHT = display.height = 1024;
+var WIDTH = display.width = 256;
+var HEIGHT = display.height = 256;
 
-var id = ctx.getImageData(0, 0, HEIGHT, HEIGHT);
-var pixels = id.data;
+let id = ctx.getImageData(0, 0, HEIGHT, HEIGHT);
+let pixels = id.data;
 
 function setPixel(x, y, r, g, b) {
     if (r instanceof vec3) {
-        var off = (y * id.width + x) * 4;
+        let off = (y * id.width + x) * 4;
         pixels[off] = r.x;
         pixels[off + 1] = r.y;
         pixels[off + 2] = r.z;
@@ -17,7 +17,7 @@ function setPixel(x, y, r, g, b) {
         return;
     }
 
-    var off = (y * id.width + x) * 4;
+    let off = (y * id.width + x) * 4;
     pixels[off] = r;
     pixels[off + 1] = g;
     pixels[off + 2] = b;
@@ -38,5 +38,3 @@ function init() {
     }
     drawScreen();
 }
-
-init();

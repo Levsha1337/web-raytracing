@@ -4,7 +4,7 @@ function trace(origin, d, elements, lights) {
     for (let i = 0; i < elements.length; i++) {
         const elem = elements[i];
 
-        let inter = elem.intersect(pov, d);
+        let inter = elem.intersect(origin, d);
 
         if (inter === null) continue;
 
@@ -94,7 +94,7 @@ function render(pov, dir, fov, elements, lights) {
             d = d.norm();
 
             // trace our ray
-            const color = trace(origin, d, elements, lights);
+            const color = trace(pov, d, elements, lights);
 
             // if we haven't color just go next
             if (color === null) continue;
@@ -108,26 +108,52 @@ function render(pov, dir, fov, elements, lights) {
     drawScreen();
 }
 
+let pov;
+let dir;
+let fov;
+let elements;
+let lights;
 
-const pov = new vec3(0, 0, 0);
-const dir = new vec3(0, 0, 1);
-const fov = 30;
+const settings = {
+    fov: document.getElementById('fovInput'),
+    wh: document.getElementById('whInput')
+}
 
-const elements = [
-    // ground
-    new sphere(new vec3(0,     -500, 2.5), new vec3(255, 255, 255), 499.7),
-    // spheres
-    new sphere(new vec3( 0.0,     0, 2.3), new vec3(255,  63, 127),   0.3),
-    new sphere(new vec3(-0.3, -0.15, 2.1), new vec3(127, 191, 255),   0.15)
-];
+function updateSettings() {
+    WIDTH = display.width = settings.wh.value;
+    HEIGHT = display.height = settings.wh.value;
+    id = ctx.getImageData(0, 0, HEIGHT, HEIGHT);
+    pixels = id.data;
 
-const lights = [
-    new light(new vec3(3.0, 3.0, 1.0), new vec3(255, 255, 255), 1),
-];
+    pov = new vec3(0, 0, 0);
+    dir = new vec3(0, 0, 1);
+    fov = Number(settings.fov.value);
+    
+    elements = [
+        // ground
+        new sphere(new vec3(0,     -500, 2.5), new vec3(255, 255, 255), 499.7),
+        // spheres
+        new sphere(new vec3( 0.0,     0, 2.3), new vec3(255,  63, 127),   0.3),
+        new sphere(new vec3(-0.3, -0.15, 2.1), new vec3(127, 191, 255),   0.15)
+    ];
+    
+    lights = [
+        new light(new vec3(3.0, 3.0, 1.0), new vec3(255, 255, 255), 1),
+    ];
+}
 
-console.log(`Size: ${WIDTH} x ${HEIGHT}`);
-const startTime = performance.now();
-render(pov, dir, fov, elements, lights);
-let endTime = performance.now() - startTime;
-endTime = (endTime/1000).toFixed(2);
-console.log(`Render time: ${endTime}s`);
+function onRenderButtonClick() {
+    updateSettings();
+    
+    init();
+
+    console.log(`Size: ${WIDTH} x ${HEIGHT}`);
+
+    const startTime = performance.now();
+    render(pov, dir, fov, elements, lights);
+    let endTime = performance.now() - startTime;
+    endTime = (endTime/1000).toFixed(2);
+    console.log(`Render time: ${endTime}s`);
+}
+
+document.getElementById('button-render-start').addEventListener('click', onRenderButtonClick);
