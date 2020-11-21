@@ -23,7 +23,6 @@ function trace(origin, d, elements, lights) {
         let hitpoint = minT.hit;
     
         let fullLight = new vec3(0);
-        let fullLightCount = 0;
         for (let i = 0; i < lights.length; i++) {
             const l = lights[i];
 
@@ -60,13 +59,11 @@ function trace(origin, d, elements, lights) {
                 }
                 if (t === null) {
                     fullLight = fullLight.plus(l.color.mul(l.power).mul(shadow));
-                    fullLightCount += +l.power;
                 }
             }
         }
-console.log(fullLightCount)
-        const divider = (fullLightCount === 0) ? 255 : fullLightCount * 255;
-        color = color.mul(fullLight).div(divider);
+        
+        color = color.mul(fullLight).div(255);
     }
 
     return color;
