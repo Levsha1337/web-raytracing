@@ -73,6 +73,22 @@ class vec3 {
         );
     }
 
+    crossProduct(b) {
+        return new vec3(
+            this.y*b.z - this.z*b.y,
+            this.z*b.x - this.x*b.z,
+            this.x*b.y - this.y*b.x
+        );
+    }
+
+    static crossProduct(a, b) {
+        return new vec3(
+            a.y*b.z - a.z*b.y,
+            a.z*b.x - a.x*b.z,
+            a.x*b.y - a.y*b.x
+        );
+    }
+
     plus(b) {
         if (!(b instanceof vec3)) {
             b = new vec3(b);
@@ -115,6 +131,10 @@ class vec3 {
             this.y / b.y,
             this.z / b.z
         );
+    }
+
+    reverse() {
+        return new vec3(-this.x, -this.y, -this.z);
     }
 }
 
@@ -171,6 +191,77 @@ class sphere {
             )
         }
     }
+}
+
+class triangle {
+    v0;
+    v1;
+    v2;
+    color;
+
+    constructor(v0, v1, v2, color) {
+        this.v0 = v0;
+        this.v1 = v1;
+        this.v2 = v2;
+        this.color = color;
+    }
+
+    intersect(orig, dir) 
+    { 
+        let v0 = this.v0;
+        let v1 = this.v1;
+        let v2 = this.v2;
+        // compute plane's normal
+        let v0v1 = v1.minus(v0); 
+        let v0v2 = v2.minus(v0); 
+        // no need to normalize
+        let N = v0v1.crossProduct(v0v2); // N 
+        // let area2 = N.length(); 
+     
+        // Step 1: finding P
+        
+        // check if ray and plane are parallel ?
+        let NdotRayDirection = N.dotProduct(dir); 
+        if (Math.abs(NdotRayDirection) < 0.000001) // almost 0 
+            return null; // they are parallel so they don't intersect ! 
+     
+        // compute d parameter using equation 2
+        let d = N.dotProduct(v0); 
+     
+        // compute t (equation 3)
+        let t = (N.dotProduct(orig) + d) / NdotRayDirection; 
+        // check if the triangle is in behind the ray
+        if (t < 0) return null; // the triangle is behind 
+     
+        // compute the intersection point using equation 1
+        let P = orig.plus(dir.mul(t)); 
+     
+        // Step 2: inside-outside test
+        let C; // vector perpendicular to triangle's plane 
+     
+        // edge 0
+        let edge0 = v1.minus(v0); 
+        let vp0 = P.minus(v0); 
+        C = edge0.crossProduct(vp0); 
+        if (N.dotProduct(C) < 0) return null; // P is on the right side 
+     
+        // edge 1
+        let edge1 = v2.minus(v1); 
+        let vp1 = P.minus(v1); 
+        C = edge1.crossProduct(vp1); 
+        if (N.dotProduct(C) < 0) return null; // P is on the right side 
+     
+        // edge 2
+        let edge2 = v0.minus(v2); 
+        let vp2 = P.minus(v2); 
+        C = edge2.crossProduct(vp2); 
+        if (N.dotProduct(C) < 0) return null; // P is on the right side; 
+     
+        return {
+            t,
+            hit: P
+        }; // this ray hits the triangle 
+    } 
 }
 
 class light {
