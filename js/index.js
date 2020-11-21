@@ -79,7 +79,10 @@ function render(pov, dir, fov, elements, lights) {
     let d10 = new vec3( 1,  a, dist);
     let d11 = new vec3( 1, -a, dist);
 
-    for (let y = 0; y < HEIGHT; y++) {
+    const btn = document.getElementById('progressBar');
+    function doStuff(i) {
+        let y = i;
+        btn.value = 100 * y / HEIGHT;
         // console.log(`line ${y+1}...`);
         for (let x = 0; x < WIDTH; x++) {
             let u = x / (WIDTH - 1);
@@ -102,10 +105,46 @@ function render(pov, dir, fov, elements, lights) {
             // or set color of our point
             setPixel(x, y, color);
         }
-    }
-    console.log(`drawing...`);
+        if (i < HEIGHT) {
+            setTimeout(doStuff.bind(window, i + 1), 0);
+        }
+        else {
 
-    drawScreen();
+            console.log(`drawing...`);
+
+            drawScreen();
+        }
+    }
+    
+    doStuff(0);
+    // for (let y = 0; y < HEIGHT; y++) {
+    //     btn.style.backgroundColor = `rgb(${255*y/HEIGHT}, 0, 0)`;
+    //     // console.log(`line ${y+1}...`);
+    //     for (let x = 0; x < WIDTH; x++) {
+    //         let u = x / (WIDTH - 1);
+    //         let v = y / (HEIGHT - 1);
+
+    //         let top = d00.lerp(d10, u);
+    //         let bot = d01.lerp(d11, u);
+
+    //         // ray direction
+    //         let d = top.lerp(bot, v);
+    //         d.z = dist;
+    //         d = d.norm();
+
+    //         // trace our ray
+    //         const color = trace(pov, d, elements, lights);
+
+    //         // if we haven't color just go next
+    //         if (color === null) continue;
+
+    //         // or set color of our point
+    //         setPixel(x, y, color);
+    //     }
+    // }
+    // console.log(`drawing...`);
+
+    // drawScreen();
 }
 
 let pov;
@@ -113,6 +152,10 @@ let dir;
 let fov;
 let elements;
 let lights;
+let lastRender = {
+    time: undefined,
+    size: undefined
+};
 
 const settings = {
     fov: document.getElementById('fovInput'),
@@ -147,13 +190,22 @@ function onRenderButtonClick() {
     
     init();
 
+    console.log('');
     console.log(`Size: ${WIDTH} x ${HEIGHT}`);
+    
+    if (lastRender.time !== undefined) {
+        const current = lastRender.time * (WIDTH**2 / lastRender.size**2);
+        console.log(`Estimated time of render: ${current}s`);
+    }
 
     const startTime = performance.now();
     render(pov, dir, fov, elements, lights);
     let endTime = performance.now() - startTime;
     endTime = (endTime/1000).toFixed(2);
     console.log(`Render time: ${endTime}s`);
+
+    lastRender.size = WIDTH;
+    lastRender.time = endTime;
 }
 
 document.getElementById('button-render-start').addEventListener('click', onRenderButtonClick);
