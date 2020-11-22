@@ -79,12 +79,18 @@ function render(pov, dir, fov, elements, lights) {
     let d10 = new vec3( 1,  a, dist);
     let d11 = new vec3( 1, -a, dist);
 
-    const btn = document.getElementById('progressBar');
+    const bar = document.getElementById('progressBar');
+    let arrY = []; for(let i = 0; i < HEIGHT; i++) arrY.push(i);
+    let arrX = []; for(let i = 0; i < WIDTH; i++) arrX.push(i);
+    arrY = arrY.sort(() => Math.random() - 0.5);
+    arrX = arrX.sort(() => Math.random() - 0.5);
     function doStuff(i) {
-        let y = i;
-        btn.value = 100 * y / HEIGHT;
+        let y = arrY[i];
+        bar.value = 100 * i / HEIGHT;
         // console.log(`line ${y+1}...`);
-        for (let x = 0; x < WIDTH; x++) {
+        // for (let x = 0; x < WIDTH; x++) {
+        for (let xi = 0; xi < WIDTH; xi++) {
+            let x = arrX[xi];
             let u = x / (WIDTH - 1);
             let v = y / (HEIGHT - 1);
 
@@ -180,9 +186,9 @@ function elementsParse() {
     });
 
     const tri = new triangle(
-        new vec3(0.4,0.7,3),
-        new vec3(0.4,0.1,3),
-        new vec3(-0.3,0.3,3),
+        new vec3(0.2,0.3,1),
+        new vec3(0.4,0.2,2),
+        new vec3(-0.3,0.1,3),
         new vec3(255, 64, 64)
     );
     // elements.push(tri);
