@@ -81,16 +81,13 @@ function render(pov, dir, fov, elements, lights) {
 
     const bar = document.getElementById('progressBar');
     let arrY = []; for(let i = 0; i < HEIGHT; i++) arrY.push(i);
-    let arrX = []; for(let i = 0; i < WIDTH; i++) arrX.push(i);
     arrY = arrY.sort(() => Math.random() - 0.5);
-    arrX = arrX.sort(() => Math.random() - 0.5);
     function doStuff(i) {
         let y = arrY[i];
         bar.value = 100 * i / HEIGHT;
         // console.log(`line ${y+1}...`);
         // for (let x = 0; x < WIDTH; x++) {
-        for (let xi = 0; xi < WIDTH; xi++) {
-            let x = arrX[xi];
+        for (let x = 0; x < WIDTH; x++) {
             let u = x / (WIDTH - 1);
             let v = y / (HEIGHT - 1);
 
